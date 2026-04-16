@@ -6,15 +6,12 @@ export async function POST(req: Request) {
 
   const userQuery = messages[messages.length - 1].content;
 
-  // 👉 YOUR DATA (RAG)
-    const docs = [
-  "Our company provides AI automation services.",
-  "We help businesses with lead generation and workflows.",
-  "Our platform integrates with CRM tools."
-];
+  const docs = [
+    "Our company provides AI automation services.",
+    "We help businesses with lead generation and workflows.",
+    "Our platform integrates with CRM tools."
   ];
 
-  // 👉 retrieval
   const context = docs
     .filter(d => d.toLowerCase().includes(userQuery.toLowerCase()))
     .join('\n');

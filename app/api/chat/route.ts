@@ -17,9 +17,10 @@ export async function POST(req: Request) {
     .join('\n');
 
   const result = streamText({
-    model: google('gemini-1.5-flash'),
-    messages,
-    system: `Answer ONLY using this:\n${context}`,
+  model: google('gemini-1.5-flash'),
+  messages: messages,
+  system: "Answer ONLY using this:\n" + context,
+});
   });
 
   return result.toDataStreamResponse();

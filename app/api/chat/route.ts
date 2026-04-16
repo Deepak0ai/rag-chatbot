@@ -1,12 +1,12 @@
 import { google } from '@ai-sdk/google';
-import { streamText } from 'ai';
+import { streamText, type CoreMessage } from 'ai';
+
+export const runtime = 'edge';
 
 export async function POST(req: Request) {
-  const body: any = await req.json();
-  const messages = body.messages || [];
+  const { messages }: { messages: CoreMessage[] } = await req.json();
 
-  const userQuery =
-    messages[messages.length - 1]?.content?.toString() || "";
+  const userQuery = messages[messages.length - 1]?.content?.toString() || "";
 
   const docs = [
     "Our company provides AI automation services.",
@@ -15,16 +15,14 @@ export async function POST(req: Request) {
   ];
 
   const context = docs
-    .filter((d: string) =>
-      d.toLowerCase().includes(userQuery.toLowerCase())
-    )
+    .filter(d => d.toLowerCase().includes(userQuery.toLowerCase()))
     .join('\n');
 
-  const result = await streamText({
+  const result = streamText({
     model: google('gemini-1.5-flash'),
-    messages: messages,
+    messages,
     system: "Answer ONLY using this:\n" + context,
   });
 
-  return result.toTextStreamResponse();
+  return result.toDataStreamResponse();
 }

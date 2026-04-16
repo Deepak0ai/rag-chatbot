@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   model: google('gemini-1.5-flash'),
   messages,
   system: "You are a helpful assistant.",
-});
+  });
 
   return result.toTextStreamResponse(); // ✅ FIXED
 }

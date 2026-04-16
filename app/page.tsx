@@ -8,7 +8,7 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
 
   const sendMessage = async () => {
-    if (!input) return;
+    if (!input.trim()) return;
 
     const newMessages = [...messages, { role: "user", content: input }];
     setMessages(newMessages);
@@ -25,12 +25,12 @@ export default function Page() {
 
       setMessages([
         ...newMessages,
-        { role: "assistant", content: data.text || "No response" },
+        { role: "assistant", content: data.text },
       ]);
-    } catch (err) {
+    } catch {
       setMessages([
         ...newMessages,
-        { role: "assistant", content: "Error getting response." },
+        { role: "assistant", content: "Error 😢" },
       ]);
     }
 
@@ -38,36 +38,55 @@ export default function Page() {
   };
 
   return (
-    <div style={{
-      maxWidth: 600,
-      margin: "40px auto",
-      color: "white"
-    }}>
-      <h1>🚀 RAG Chatbot</h1>
-
-      <div style={{
-        border: "1px solid #444",
-        padding: 20,
-        minHeight: 300,
-        borderRadius: 10
-      }}>
-        {messages.map((m, i) => (
-          <div key={i}>
-            <b>{m.role}:</b> {m.content}
-          </div>
-        ))}
+    <div className="h-screen bg-[#0f172a] text-white flex flex-col">
+      
+      {/* HEADER */}
+      <div className="text-center p-4 text-xl font-bold border-b border-gray-700">
+        🚀 RAG Chatbot
       </div>
 
-      <input
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Ask anything..."
-        style={{ width: "80%", marginTop: 10 }}
-      />
+      {/* CHAT */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((m, i) => (
+          <div
+            key={i}
+            className={`flex ${
+              m.role === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
+            <div
+              className={`px-4 py-2 rounded-xl max-w-xs ${
+                m.role === "user"
+                  ? "bg-blue-600"
+                  : "bg-gray-700"
+              }`}
+            >
+              {m.content}
+            </div>
+          </div>
+        ))}
 
-      <button onClick={sendMessage}>
-        {loading ? "..." : "Send"}
-      </button>
+        {loading && (
+          <div className="text-gray-400 text-sm">Typing...</div>
+        )}
+      </div>
+
+      {/* INPUT */}
+      <div className="p-4 border-t border-gray-700 flex gap-2">
+        <input
+          className="flex-1 p-2 rounded bg-gray-800 outline-none"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Ask anything..."
+        />
+
+        <button
+          onClick={sendMessage}
+          className="bg-blue-600 px-4 rounded"
+        >
+          Send
+        </button>
+      </div>
     </div>
   );
 }

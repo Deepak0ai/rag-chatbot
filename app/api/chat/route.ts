@@ -7,7 +7,6 @@ export async function POST(req: Request) {
   const userQuery = messages[messages.length - 1].content;
 
   // 👉 YOUR DATA (RAG)
-  const docs = [
     const docs = [
   "Our company provides AI automation services.",
   "We help businesses with lead generation and workflows.",

@@ -22,5 +22,5 @@ export async function POST(req: Request) {
   system: "Answer ONLY using this:\n" + context,
   });
 
-  return result.toDataStreamResponse();
+  return result.toTextStreamResponse();
 }

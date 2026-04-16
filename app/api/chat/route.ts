@@ -14,9 +14,7 @@ export async function POST(req: Request) {
     "Our platform integrates with CRM tools."
   ];
 
-  const context = docs
-    .filter(d => d.toLowerCase().includes(userQuery.toLowerCase()))
-    .join('\n');
+  const context = docs.join('\n');
 
   const result = streamText({
     model: google('gemini-1.5-flash'),

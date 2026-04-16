@@ -19,13 +19,10 @@ export async function POST(req: Request) {
     .join('\n');
 
   const result = streamText({
-    model: google('gemini-1.5-flash'),
-    messages,
-    system:
-      context.length > 0
-        ? `Answer ONLY using this:\n${context}`
-        : "Answer normally.",
-  });
+  model: google('gemini-1.5-flash'),
+  messages,
+  system: "You are a helpful assistant.",
+});
 
   return result.toTextStreamResponse(); // ✅ FIXED
 }

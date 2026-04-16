@@ -4,13 +4,13 @@ import { useChat } from 'ai/react';
 
 export default function Page() {
   const {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    isLoading
-  } = useChat();
-
+  messages,
+  input,
+  handleInputChange,
+  handleSubmit,
+} = useChat({
+  api: '/api/chat'
+});
   return (
     <div style={{
       maxWidth: 700,

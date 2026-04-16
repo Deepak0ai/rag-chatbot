@@ -14,19 +14,18 @@ export async function POST(req: Request) {
     });
 
     const result = await model.generateContent(userMessage);
-    const response = await result.response;
-    const text = response.text();
+    const text = result.response.text();
 
     return new Response(
       JSON.stringify({ text }),
       { headers: { "Content-Type": "application/json" } }
     );
 
-  } catch (error: any) {
-    console.error("ERROR:", error);
+  } catch (error) {
+    console.error(error);
 
     return new Response(
-      JSON.stringify({ text: "Something went wrong 😢" }),
+      JSON.stringify({ text: "Error 😢" }),
       { status: 200 }
     );
   }

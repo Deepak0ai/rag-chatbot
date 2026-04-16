@@ -1,5 +1,4 @@
-import { google } from '@ai-sdk/google';
-import { generateText } from 'ai';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(req: Request) {
   try {
@@ -8,28 +7,27 @@ export async function POST(req: Request) {
     const userMessage =
       messages?.[messages.length - 1]?.content || "Hello";
 
-    console.log("User:", userMessage);
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
 
-    const result = await generateText({
-      model: google('gemini-1.5-flash'),
-      prompt: userMessage,
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
     });
 
-    console.log("AI:", result.text);
+    const result = await model.generateContent(userMessage);
+    const response = await result.response;
+    const text = response.text();
 
     return new Response(
-      JSON.stringify({ text: result.text }),
-      { headers: { 'Content-Type': 'application/json' } }
+      JSON.stringify({ text }),
+      { headers: { "Content-Type": "application/json" } }
     );
 
   } catch (error: any) {
-    console.error("FULL ERROR:", error);
+    console.error("ERROR:", error);
 
     return new Response(
-      JSON.stringify({
-        error: error.message || "Something broke"
-      }),
-      { status: 500 }
+      JSON.stringify({ text: "Something went wrong 😢" }),
+      { status: 200 }
     );
   }
 }

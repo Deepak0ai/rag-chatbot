@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google';
-import { streamText } from 'ai';
+import { generateText } from 'ai';
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
@@ -12,13 +12,25 @@ export async function POST(req: Request) {
 
   const context = docs.join('\n');
 
-  const result = streamText({
+  const userMessage = messages[messages.length - 1]?.content || "";
+
+  const result = await generateText({
     model: google('gemini-1.5-flash'),
-    messages,
-    system: `You are a helpful AI assistant.
+    prompt: `
+You are a helpful AI assistant.
+
 Answer ONLY using this context:
-${context}`
+${context}
+
+User question: ${userMessage}
+`
   });
 
-  return result.toTextStreamResponse();
+  return new Response(
+    JSON.stringify({
+      role: "assistant",
+      content: result.text
+    }),
+    { headers: { "Content-Type": "application/json" } }
+  );
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 export default function Page() {
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<{role: string, content: string}[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -25,12 +25,12 @@ export default function Page() {
 
       setMessages([
         ...newMessages,
-        { role: "assistant", content: data.text },
+        { role: "assistant", content: data.text || "No response" },
       ]);
     } catch {
       setMessages([
         ...newMessages,
-        { role: "assistant", content: "Error 😢" },
+        { role: "assistant", content: "Error getting response." },
       ]);
     }
 
@@ -40,19 +40,17 @@ export default function Page() {
   return (
     <div className="h-screen bg-[#0f172a] text-white flex flex-col">
       
-      {/* HEADER */}
-      <div className="text-center p-4 text-xl font-bold border-b border-gray-700">
+      {/* Header */}
+      <div className="p-4 text-center font-bold text-xl border-b border-gray-700">
         🚀 RAG Chatbot
       </div>
 
-      {/* CHAT */}
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`flex ${
-              m.role === "user" ? "justify-end" : "justify-start"
-            }`}
+            className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
               className={`px-4 py-2 rounded-xl max-w-xs ${
@@ -66,18 +64,17 @@ export default function Page() {
           </div>
         ))}
 
-        {loading && (
-          <div className="text-gray-400 text-sm">Typing...</div>
-        )}
+        {loading && <div className="text-gray-400">Typing...</div>}
       </div>
 
-      {/* INPUT */}
+      {/* Input */}
       <div className="p-4 border-t border-gray-700 flex gap-2">
         <input
           className="flex-1 p-2 rounded bg-gray-800 outline-none"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask anything..."
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
 
         <button

@@ -4,8 +4,8 @@ import { streamText } from 'ai';
 export async function POST(req: Request) {
   const { messages } = await req.json();
 
-  const userQuery = messages[messages.length - 1].content;
-
+  const userQuery =
+  messages[messages.length - 1]?.content?.toString() || "";
   const docs = [
     "Our company provides AI automation services.",
     "We help businesses with lead generation and workflows.",

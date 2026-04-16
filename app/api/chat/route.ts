@@ -1,36 +1,31 @@
 import { google } from '@ai-sdk/google';
-import { generateText } from 'ai';
+import { streamText } from 'ai';
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
 
+  const userQuery =
+    messages[messages.length - 1]?.content?.toString() || "";
+
+  // Simple RAG data
   const docs = [
-    "Our company provides AI automation services.",
+    "We provide AI automation services.",
     "We help businesses with lead generation and workflows.",
     "Our platform integrates with CRM tools."
   ];
 
-  const context = docs.join('\n');
+  const context = docs
+    .filter(d => d.toLowerCase().includes(userQuery.toLowerCase()))
+    .join('\n');
 
-  const userMessage = messages[messages.length - 1]?.content || "";
-
-  const result = await generateText({
+  const result = streamText({
     model: google('gemini-1.5-flash'),
-    prompt: `
-You are a helpful AI assistant.
-
-Answer ONLY using this context:
-${context}
-
-User question: ${userMessage}
-`
+    messages,
+    system:
+      context.length > 0
+        ? `Answer ONLY using this:\n${context}`
+        : "Answer normally.",
   });
 
-  return new Response(
-    JSON.stringify({
-      role: "assistant",
-      content: result.text
-    }),
-    { headers: { "Content-Type": "application/json" } }
-  );
+  return result.toTextStreamResponse(); // ✅ FIXED
 }

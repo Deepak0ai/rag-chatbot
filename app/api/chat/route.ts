@@ -1,12 +1,8 @@
 import { google } from '@ai-sdk/google';
-import { streamText, type CoreMessage } from 'ai';
-
-export const runtime = 'edge';
+import { streamText } from 'ai';
 
 export async function POST(req: Request) {
-  const { messages }: { messages: CoreMessage[] } = await req.json();
-
-  const userQuery = messages[messages.length - 1]?.content?.toString() || "";
+  const { messages } = await req.json();
 
   const docs = [
     "Our company provides AI automation services.",
@@ -19,7 +15,9 @@ export async function POST(req: Request) {
   const result = streamText({
     model: google('gemini-1.5-flash'),
     messages,
-    system: "Answer ONLY using this:\n" + context,
+    system: `You are a helpful AI assistant.
+Answer ONLY using this context:
+${context}`
   });
 
   return result.toTextStreamResponse();

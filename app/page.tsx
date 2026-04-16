@@ -19,7 +19,7 @@ export default function Page() {
         <input
           value={input}
           onChange={handleInputChange}
-          placeholder="Ask..."
+          placeholder="Ask something..."
         />
       </form>
     </div>

@@ -6,20 +6,30 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
 
     const userMessage =
-      messages[messages.length - 1]?.content || "";
+      messages?.[messages.length - 1]?.content || "Hello";
+
+    console.log("User:", userMessage);
 
     const result = await generateText({
       model: google('gemini-1.5-flash'),
       prompt: userMessage,
     });
 
+    console.log("AI:", result.text);
+
     return new Response(
       JSON.stringify({ text: result.text }),
       { headers: { 'Content-Type': 'application/json' } }
     );
 
-  } catch (error) {
-    console.error(error);
-    return new Response("Error", { status: 500 });
+  } catch (error: any) {
+    console.error("FULL ERROR:", error);
+
+    return new Response(
+      JSON.stringify({
+        error: error.message || "Something broke"
+      }),
+      { status: 500 }
+    );
   }
 }

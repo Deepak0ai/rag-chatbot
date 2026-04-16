@@ -4,53 +4,51 @@ import { useChat } from 'ai/react';
 
 export default function Page() {
   const {
-  messages,
-  input,
-  handleInputChange,
-  handleSubmit,
-  isLoading
-} = useChat({
-  api: '/api/chat'
-});
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading
+  } = useChat({
+    api: '/api/chat'
+  });
+
   return (
     <div style={{
-      maxWidth: 700,
-      margin: 'auto',
-      padding: 20,
+      maxWidth: 600,
+      margin: '50px auto',
       fontFamily: 'Arial'
     }}>
-      <h1 style={{ textAlign: 'center' }}>RAG Chatbot</h1>
+      <h2 style={{ textAlign: 'center' }}>RAG Chatbot</h2>
 
       <div style={{
-        minHeight: 400,
-        border: '1px solid #ddd',
-        padding: 10,
+        border: '1px solid #ccc',
+        borderRadius: 10,
+        padding: 20,
+        height: 400,
+        overflowY: 'auto',
         marginBottom: 10
       }}>
-        {messages.map((m) => (
-          <div
-            key={m.id}
-            style={{
-              margin: '10px 0',
-              textAlign: m.role === 'user' ? 'right' : 'left'
-            }}
-          >
-            <span
-              style={{
-                display: 'inline-block',
-                padding: 10,
-                borderRadius: 10,
-                background:
-                  m.role === 'user' ? '#0070f3' : '#e5e5ea',
-                color: m.role === 'user' ? 'white' : 'black'
-              }}
-            >
+        {messages.map((m, i) => (
+          <div key={i} style={{
+            textAlign: m.role === 'user' ? 'right' : 'left',
+            margin: '10px 0'
+          }}>
+            <span style={{
+              display: 'inline-block',
+              padding: '10px 15px',
+              borderRadius: 10,
+              background: m.role === 'user' ? '#0070f3' : '#eee',
+              color: m.role === 'user' ? '#fff' : '#000'
+            }}>
               {m.content}
             </span>
           </div>
         ))}
 
-        {isLoading && <p>AI is typing...</p>}
+        {isLoading && (
+          <p style={{ color: 'gray' }}>AI is typing...</p>
+        )}
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -60,7 +58,7 @@ export default function Page() {
           placeholder="Ask something..."
           style={{
             width: '100%',
-            padding: 12,
+            padding: 10,
             borderRadius: 8,
             border: '1px solid #ccc'
           }}

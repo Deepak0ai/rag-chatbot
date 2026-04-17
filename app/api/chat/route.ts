@@ -12,17 +12,19 @@ export async function POST(req: Request) {
       model: "gemini-1.5-flash",
     });
 
-    const lastMessage = messages[messages.length - 1]?.content;
+    const lastMessage = messages[messages.length - 1]?.content || "";
 
     const result = await model.generateContent(lastMessage);
 
     const text = result.response.text();
 
-    return Response.json({
-      content: text,
+    return new Response(JSON.stringify({ content: text }), {
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error(error);
-    return Response.json({ content: "Error" });
+    console.error("ERROR:", error);
+    return new Response(JSON.stringify({ content: "Error" }), {
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }

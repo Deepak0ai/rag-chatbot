@@ -1,6 +1,5 @@
 export const metadata = {
   title: "RAG Chatbot",
-  description: "A simple RAG chatbot",
 };
 
 export default function RootLayout({

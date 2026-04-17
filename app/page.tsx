@@ -7,32 +7,32 @@ export default function Page() {
   const [input, setInput] = useState("");
 
   const sendMessage = async () => {
-    if (!input) return;
+    if (!input.trim()) return;
 
-    const newMessages = [...messages, { role: "user", content: input }];
-    setMessages(newMessages);
+    const updated = [...messages, { role: "user", content: input }];
+    setMessages(updated);
     setInput("");
 
     const res = await fetch("/api/chat", {
       method: "POST",
-      body: JSON.stringify({ messages: newMessages }),
+      body: JSON.stringify({ messages: updated }),
     });
 
     const data = await res.json();
 
     setMessages([
-      ...newMessages,
+      ...updated,
       { role: "assistant", content: data.content || "No response" },
     ]);
   };
 
   return (
-    <div style={{ padding: 40 }}>
-      <h2>Chatbot</h2>
+    <div style={{ padding: 40, fontFamily: "Arial" }}>
+      <h2>🚀 Chatbot</h2>
 
-      <div style={{ minHeight: 300 }}>
+      <div style={{ minHeight: 300, marginBottom: 20 }}>
         {messages.map((m, i) => (
-          <div key={i}>
+          <div key={i} style={{ marginBottom: 10 }}>
             <b>{m.role}:</b> {m.content}
           </div>
         ))}
@@ -41,8 +41,12 @@ export default function Page() {
       <input
         value={input}
         onChange={(e) => setInput(e.target.value)}
+        placeholder="Ask something..."
       />
-      <button onClick={sendMessage}>Send</button>
+
+      <button onClick={sendMessage} style={{ marginLeft: 10 }}>
+        Send
+      </button>
     </div>
   );
 }

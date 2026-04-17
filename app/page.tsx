@@ -1,74 +1,48 @@
 "use client";
 
-import { useChat } from "ai/react";
-import { useEffect, useRef } from "react";
+import { useState } from "react";
 
 export default function Page() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
-    useChat({
-      api: "/api/chat",
+  const [messages, setMessages] = useState<any[]>([]);
+  const [input, setInput] = useState("");
+
+  const sendMessage = async () => {
+    if (!input) return;
+
+    const newMessages = [...messages, { role: "user", content: input }];
+    setMessages(newMessages);
+    setInput("");
+
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      body: JSON.stringify({ messages: newMessages }),
     });
 
-  const bottomRef = useRef<HTMLDivElement>(null);
+    const data = await res.json();
 
-  // auto scroll
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    setMessages([
+      ...newMessages,
+      { role: "assistant", content: data.content || "No response" },
+    ]);
+  };
 
   return (
-    <div className="h-screen bg-[#0f172a] text-white flex flex-col">
-      {/* HEADER */}
-      <div className="p-4 border-b border-gray-700 text-center text-lg font-semibold">
-        🚀 RAG Chatbot
-      </div>
+    <div style={{ padding: 40 }}>
+      <h2>Chatbot</h2>
 
-      {/* CHAT AREA */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
-        {messages.map((m) => (
-          <div
-            key={m.id}
-            className={`flex ${
-              m.role === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div
-              className={`max-w-[70%] px-4 py-2 rounded-2xl ${
-                m.role === "user"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-800 text-gray-200"
-              }`}
-            >
-              {m.content}
-            </div>
+      <div style={{ minHeight: 300 }}>
+        {messages.map((m, i) => (
+          <div key={i}>
+            <b>{m.role}:</b> {m.content}
           </div>
         ))}
-
-        {isLoading && (
-          <div className="text-gray-400 text-sm">Typing...</div>
-        )}
-
-        <div ref={bottomRef} />
       </div>
 
-      {/* INPUT BAR */}
-      <form
-        onSubmit={handleSubmit}
-        className="p-4 border-t border-gray-700 flex gap-2"
-      >
-        <input
-          value={input}
-          onChange={handleInputChange}
-          placeholder="Ask anything..."
-          className="flex-1 bg-gray-800 text-white px-4 py-3 rounded-xl outline-none"
-        />
-        <button
-          type="submit"
-          className="bg-blue-600 px-6 py-3 rounded-xl hover:bg-blue-700 transition"
-        >
-          Send
-        </button>
-      </form>
+      <input
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+      />
+      <button onClick={sendMessage}>Send</button>
     </div>
   );
 }

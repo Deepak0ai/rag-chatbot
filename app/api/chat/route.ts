@@ -1,32 +1,19 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { streamText } from "ai";
+import { google } from "@ai-sdk/google";
 
 export async function POST(req: Request) {
+  const { messages } = await req.json();
+
   try {
-    const { messages } = await req.json();
-
-    const userMessage =
-      messages?.[messages.length - 1]?.content || "Hello";
-
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
-
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+    const result = await streamText({
+      model: google("gemini-1.5-flash"),
+      system: "You are a helpful assistant.",
+      messages,
     });
 
-    const result = await model.generateContent(userMessage);
-    const text = result.response.text();
-
-    return new Response(
-      JSON.stringify({ text }),
-      { headers: { "Content-Type": "application/json" } }
-    );
-
+    return result.toTextStreamResponse();
   } catch (error) {
-    console.error(error);
-
-    return new Response(
-      JSON.stringify({ text: "Error 😢" }),
-      { status: 200 }
-    );
+    console.error("API ERROR:", error);
+    return new Response("Error", { status: 500 });
   }
 }

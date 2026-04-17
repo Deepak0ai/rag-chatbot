@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { retrieveContext } from "@/lib/knowledgeBase";
-
 export async function POST(req: Request) {
   try {
     const { message } = await req.json();
